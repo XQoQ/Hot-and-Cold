@@ -64,7 +64,7 @@ section {
     gap: 1em;
 }
 
-* /*=== User Section === */
+/* === User Section === */
 
 .user-section {
     display: flex;
@@ -89,6 +89,7 @@ section {
     display: flex;
     flex-direction: column;
     gap: 1em;
+    position: relative; /* Added for positioning the emoji icon */
 }
 
 .post {
@@ -97,17 +98,71 @@ section {
     flex-direction: column;
     margin: 5px;
     padding: 10px;
+    border-radius: 10px;
+}
+
+#post-input {
+    font-size: 1em;
+    border: 0;
+    box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, .25);
+    resize: none;
+    height: 6em;
+    padding-right: 3em; /* Added space for the emoji icon */
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    box-shadow: 0px var(--button-height) 0px 0px var(--dark-color);
+    position: relative;
+}
+
+.primary-btn:hover {
+    top: var(--button-height);
+    box-shadow: none;
 }
 
 #user-posts {
-    height: 300px; /* Set a fixed height */
-    width: 100%; /* Set the desired width */
+    height: 300px;
+    width: 100%;
     margin-top: 20px;
-    overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: hidden; /* Prevent horizontal scrolling, if needed */
-    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
-    padding: 10px; /* Optional: Add some padding */
-    box-sizing: border-box; /* Ensure padding and border are included in the height/width */
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.emoji-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10; /* To make sure the icon is above the textarea */
+}
+
+.emoji-popup {
+    display: none;
+    position: absolute;
+    bottom: 40px; /* Positioned above the emoji icon */
+    right: 10px;
+    background-color: var(--light-color);
+    border: 1px solid var(--grey-color);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9; /* Behind the emoji icon */
+}
+
+.emoji {
+    font-size: 24px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.emoji:hover {
+    opacity: 0.7;
 }
 
 /* === Nav === */
@@ -119,23 +174,6 @@ nav {
     justify-content: flex-end;
 }
 
-.user-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8em;
-}
-
-.user-section img {
-    width: 3.75em;
-    height: 3.75em;
-    border-radius: 100%;
-    border: var(--border-width) solid var(--dark-color);
-}
-
-.user-section h2 {
-    font-size: 1.2em;
-}
 /* === Structure === */
 
 .container {
@@ -158,20 +196,17 @@ input, button, textarea {
     width: 100%;
     box-sizing: border-box;
  }
- 
- 
- input, button {
+
+input, button {
     font-size: 1.1em;
     text-align: center;
     border: var(--border-width) solid var(--dark-color);
  }
- 
- 
- input:focus, button:focus, textarea:focus {
+
+input:focus, button:focus, textarea:focus {
     outline: none;
- }
- 
-/* this is for the user profile */
+}
+
 .app-container {
     display: flex;
     flex-direction: column;
@@ -184,17 +219,9 @@ input {
     font-weight: 300;
 }
 
-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+input::placeholder {
     color: var(--grey-color);
-    opacity: 1; /* Firefox */
-}
-
-input:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: var(--grey-color);
-}
-
-input::-ms-input-placeholder { /* Microsoft Edge */
-    color: var(--grey-color);
+    opacity: 1;
 }
 
 textarea {
@@ -204,23 +231,10 @@ textarea {
     resize: none;
     height: 6em;
 }
- 
- 
-textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
 
-    opacity: 1; /* Firefox */
+textarea::placeholder {
+    opacity: 1;
 }
- 
- 
-textarea:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: var(--grey-color);
-}
- 
- 
-textarea::-ms-input-placeholder { /* Microsoft Edge */
-    color: var(--grey-color);
-}
- 
 
 /* === Buttons === */
 
@@ -232,17 +246,6 @@ button {
 
 button:hover {
     cursor: pointer;
-}
-
-.primary-btn {
-    background-color: var(--primary-color);
-    box-shadow: 0px var(--button-height) 0px 0px var(--dark-color);
-    position: relative;
-}
-
-.primary-btn:hover {
-    top: var(--button-height);
-    box-shadow: none;
 }
 
 .secondary-btn {
@@ -275,9 +278,7 @@ button:hover {
     width: 1.375em;
 }
 
-/* 
-classes to make the sign out buttons work 
-*/
+/* === Icon Image Buttons === */
 
 .icon-img-btn {
     background: none;
@@ -290,6 +291,7 @@ classes to make the sign out buttons work
 .icon-img-btn:hover {
     filter: invert(0.5);
 }
+
 /* === IDs === */
 
 #logged-out-view {
@@ -299,6 +301,3 @@ classes to make the sign out buttons work
 #logged-in-view {
     display: none;
 }
-
-/*  credit:coursera */
-
