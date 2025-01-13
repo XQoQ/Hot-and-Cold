@@ -89,8 +89,26 @@ section {
     display: flex;
     flex-direction: column;
     gap: 1em;
- } 
+}
 
+.post {
+    background-color: #f0c175;
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    padding: 10px;
+}
+
+#user-posts {
+    height: 300px; /* Set a fixed height */
+    width: 100%; /* Set the desired width */
+    margin-top: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling, if needed */
+    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+    padding: 10px; /* Optional: Add some padding */
+    box-sizing: border-box; /* Ensure padding and border are included in the height/width */
+}
 
 /* === Nav === */
 
@@ -189,7 +207,7 @@ textarea {
  
  
 textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: var(--grey-color);
+
     opacity: 1; /* Firefox */
 }
  

@@ -1,7 +1,7 @@
 /* === Imports === */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"
 
 /* === Firebase Setup === */
 
@@ -45,6 +45,9 @@ const userGreetingEl = document.getElementById("user-greeting")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
 
+const postContainerEl = document.getElementById("user-posts")
+const fetchPostButtonEl = document.getElementById("fetch-post-btn")
+
 /* == UI - Event Listeners == */
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
@@ -55,16 +58,9 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 signOutButtonEl.addEventListener("click", authSignOut);
 
 postButtonEl.addEventListener("click", postButtonPressed)
+fetchPostButtonEl.addEventListener("click", fetchPost)
 
 /* === Main Code === */
-
-/*  Challenge:
-    Import the onAuthStateChanged function from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
-    Use the code from the documentation to make this work.
-    Use onAuthStateChanged to:
-    Show the logged in view when the user is logged in using showLoggedInView()
-    Show the logged out view when the user is logged out using showLoggedOutView()
-*/
 onAuthStateChanged(auth, (user) => {
     if (user) {
       // User is signed in, see docs for a list of available properties
@@ -84,21 +80,11 @@ console.log(app.options.projectId);
 /* === Functions === */
 
 /* = Functions - Firebase - Authentication = */
-
 function authSignInWithGoogle() {
     console.log("Sign in with Google")
 }
 
 function authSignInWithEmail() {
-    console.log("Sign in with email and password")
-    /*  Challenge:
-    1  Import the signInWithEmailAndPassword function from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
-    2 Use the code from the documentation to make this function work.
-    3  Make sure to first create two consts, 'email' and 'password', to fetch the values from the input fields emailInputEl and passwordInputEl.
-    4 If the login is successful then you should show the logged in view using showLoggedInView()
-    5   If something went wrong, then you should log the error message using console.error.
-    */
-
     const email = emailInputEl.value
     const password = passwordInputEl.value
     signInWithEmailAndPassword(auth, email, password)
@@ -115,15 +101,6 @@ function authSignInWithEmail() {
 }
 
 function authCreateAccountWithEmail() {
-    console.log("Sign up with email and password")
-    /*  Challenge:
-    1 Import the createUserWithEmailAndPassword function from from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    2 Use the code from the documentation to make this function work.
-    3 Make sure to first create two consts, 'email' and 'password', to fetch the values from the input fields emailInputEl and passwordInputEl.
-    4 If the creation of user is successful then you should show the logged in view using showLoggedInView()
-    5 If something went wrong, then you should log the error message using console.error.
-    */
-   
     const email = emailInputEl.value
     const password = passwordInputEl.value
     createUserWithEmailAndPassword(auth, email, password)
@@ -140,14 +117,6 @@ function authCreateAccountWithEmail() {
 }
 
 function authSignOut() {
-    /*  Challenge:
-        Import the signOut function from 'firebase/auth'
-        Use the code from the documentation to make this function work.
-   
-        If the log out is successful then you should show the logged out view using showLoggedOutView()
-        If something went wrong, then you should log the error message using console.error.
-    */
-
     signOut(auth)
     .then(() => {
         // Sign-out successful.
@@ -165,21 +134,6 @@ function authSignOut() {
 /* == Functions - UI Functions == */
 
 function showProfilePicture(imgElement, user) {
-    /*  Challenge:
-        Use the documentation to make this function work.
-       
-        This function has two parameters: imgElement and user
-       
-        We will call this function inside of onAuthStateChanged when the user is logged in.
-       
-        The function will be called with the following arguments:
-        showProfilePicture(userProfilePictureEl, user)
-       
-        If the user has a profile picture URL, set the src of imgElement to that URL.
-       
-        Otherwise, you should set the src of imgElement to "assets/images/default-profile-picture.jpeg"
-    */
-
     if (user !== null) {
         // The user object has basic properties such as display name, email, etc.
         const displayName = user.displayName;
@@ -199,27 +153,9 @@ function showProfilePicture(imgElement, user) {
         const uid = user.uid;
     }
 }
- 
+
 
 function showUserGreeting(element, user) {
-  /*  Challenge:
-      Use the documentation to make this function work.
-     
-      This function has two parameters: element and user
-     
-      We will call this function inside of onAuthStateChanged when the user is logged in.
-     
-      The function will be called with the following arguments:
-      showUserGreeting(userGreetingEl, user)
-     
-      If the user has a display name, then set the textContent of element to:
-      "Hi ___ ( your first name)"
-      Where __ is replaced with the actual first name of the user
-     
-      Otherwise, set the textContent of element to:
-      "Hey friend, how are you?"
-  */
-
   const displayName = user.displayName;
   const email = user.email;
   const photoURL = user.photoURL;
@@ -248,22 +184,6 @@ function clearInputField(textareaEl) {
 
 /* = Functions - Firebase - Cloud Firestore = */
 async function addPostToDB(postBody, user) {
-  /*  Challenge:
-      Import collection and addDoc from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"
-      Use the code from the documentation to make this function work.
-     
-      The function should add a new document to the "posts" collection in Firestore.
-     
-      The document should contain a field called 'body' of type "string" with a value of
-      postBody (from function parameter)
-     
-      If the document was written successfully, then console log
-      "Document written with ID: {documentID}"
-      Where documentID is the actual ID of the newly created document.
-     
-      If something went wrong, then you should log the error message using console.error
-  */
-
   try {
     const docRef = await addDoc(collection(db, "Posts"), {
       body: postBody,
@@ -276,10 +196,44 @@ async function addPostToDB(postBody, user) {
   }
 }
 
+async function fetchPost() {
+  const postsCollection = collection(db, "Posts")
+  getDocs(postsCollection)
+    .then((snapshot) => {
+      const postsDocumentations = snapshot.docs
+      postContainerEl.innerHTML = ""
+      postsDocumentations.forEach((doc) => {
+        const user = auth.currentUser
+        if (doc.data().uid === user.uid) {
+            try {
+            /* the post div */
+            const postDiv = document.createElement("div");
+            postDiv.className = "post";
+            
+            /* post's text content */
+            const bodyParagraph = document.createElement("p")
+            bodyParagraph.innerText = 
+            `${doc.data().createAt.toDate().toLocaleDateString()} - ${doc.data().createAt.toDate().toLocaleTimeString()}
+            
+            ${doc.data().body}
+            `
+            /* appending the post to post container */
+            postDiv.append(bodyParagraph)
+            postContainerEl.append(postDiv)
+            } catch (e) {
+                console.error("Error fetching posts: ", e)
+            }
+        }
+        console.log(doc.id, '=>', doc.data());
+      })
+    })
+    .catch((error) => {
+      console.error("Error getting documents: ", error);
+    });
+}
+
 
 /* == Functions - UI Functions == */
-
-
 function showLoggedOutView() {
     hideView(viewLoggedIn)
     showView(viewLoggedOut)
