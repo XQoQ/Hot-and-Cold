@@ -155,14 +155,31 @@ function postButtonPressed() {
 }
 
 function clearInputField(textareaEl) {
-    textareaEl.value = "";  // Use .value to clear the input
+    textareaEl.value = "";
 }
 
 // Firebase - Cloud Firestore
 async function addPostToDB(postBody, user) {
     try {
+        // Regular expression to match emoji characters
+        const emojiRegex = /[\p{Emoji}]/gu;  // Emoji Unicode property
+
+        // Find the first emoji in the postBody
+        const match = postBody.match(emojiRegex);
+
+        let emoji = '';
+        if (match && match.length > 0) {
+            emoji = match[0];  // Take the first matched emoji
+        } else {
+            emoji = '😊';  // No emoji found
+        }
+
+        console.log(emoji);
+
+        // Adding the post to the database
         const docRef = await addDoc(collection(db, "Posts"), {
             body: postBody,
+            mood: emoji,
             uid: user.uid,
             createAt: serverTimestamp()
         });
@@ -172,6 +189,7 @@ async function addPostToDB(postBody, user) {
     }
 }
 
+
 async function fetchPost() {
     const postsCollection = collection(db, "Posts");
     getDocs(postsCollection)
@@ -179,8 +197,8 @@ async function fetchPost() {
             const postsDocumentations = snapshot.docs;
             postContainerEl.innerHTML = "";
             postsDocumentations.forEach((doc) => {
-                const user = auth.currentUser;
-                if (doc.data().uid === user.uid) {
+                //const user = auth.currentUser;
+                //if (doc.data().uid === user.uid) {
                     try {
                         const postDiv = document.createElement("div");
                         postDiv.className = "post";
@@ -188,14 +206,22 @@ async function fetchPost() {
                         const bodyParagraph = document.createElement("p");
                         bodyParagraph.innerText = 
                             `${doc.data().createAt.toDate().toLocaleDateString()} - ${doc.data().createAt.toDate().toLocaleTimeString()}
-                            ${doc.data().body}`;
+                           
+                            ${doc.data().body}
+                            `
                         
+                        const mood = doc.data().mood;
+                        const emojiDiv = document.createElement("span");
+                        emojiDiv.className = "mood";  
+                        emojiDiv.innerText = mood;  
+
                         postDiv.append(bodyParagraph);
+                        postDiv.append(emojiDiv)
                         postContainerEl.append(postDiv);
                     } catch (e) {
                         console.error("Error fetching posts: ", e);
                     }
-                }
+                //}
             });
         })
         .catch((error) => {
@@ -226,11 +252,11 @@ function setupEmojiListeners() {
 
 // Emoji Popup Content
 emojiPopup.innerHTML = `
-    <span class="emoji">😀</span>
+    <span class="emoji">😁</span>
     <span class="emoji">😃</span>
-    <span class="emoji">😎</span>
-    <span class="emoji">😢</span>
-    <span class="emoji">❤️</span>
+    <span class="emoji">😐</span>
+    <span class="emoji">🙁</span>
+    <span class="emoji">😭</span>
 `;
 
 // Initialize emoji listeners

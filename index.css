@@ -89,7 +89,7 @@ section {
     display: flex;
     flex-direction: column;
     gap: 1em;
-    position: relative; /* Added for positioning the emoji icon */
+    position: relative;
 }
 
 .post {
@@ -99,7 +99,9 @@ section {
     margin: 5px;
     padding: 10px;
     border-radius: 10px;
+    position: relative;
 }
+
 
 #post-input {
     font-size: 1em;
@@ -107,7 +109,16 @@ section {
     box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, .25);
     resize: none;
     height: 6em;
-    padding-right: 3em; /* Added space for the emoji icon */
+    padding-right: 3em;
+}
+
+.mood {
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
 .primary-btn {
@@ -139,20 +150,20 @@ section {
     right: 10px;
     font-size: 24px;
     cursor: pointer;
-    z-index: 10; /* To make sure the icon is above the textarea */
+    z-index: 10;
 }
 
 .emoji-popup {
     display: none;
     position: absolute;
-    bottom: 40px; /* Positioned above the emoji icon */
+    bottom: 40px;
     right: 10px;
     background-color: var(--light-color);
     border: 1px solid var(--grey-color);
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 9; /* Behind the emoji icon */
+    z-index: 9;
 }
 
 .emoji {
